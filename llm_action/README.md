@@ -14,17 +14,6 @@ A Python application that takes user input, sends it to CodeLlama, extracts code
    pip install -r requirements.txt
    ```
 
-2. Ensure Ollama is running (see top-level README)
-
-## How It Works
-
-1. **Combined Prompt**: Creates a combined prompt that includes system instructions and user input in a single message to the LLM
-2. **User Input**: Prompts for a text input (designed for code generation requests)
-3. **LLM Call**: Sends the combined system + user prompt to CodeLlama 7B model via Ollama
-4. **Code Extraction**: Finds the first code block (content between ``` and ```) in the response
-5. **File Creation**: Creates a `scripts/` directory (if it doesn't exist) and saves the Python file with a random long number as filename (e.g., `scripts/1234567890123456.py`)
-6. **Execution**: Prints the full LLM response, filename, and executes the extracted code
-
 ## Usage
 
 Run the application:
@@ -32,14 +21,10 @@ Run the application:
 python app.py
 ```
 
-Example prompt: "Write a Python function that calculates fibonacci numbers"
+Example prompt: "Give me the current time in San Francisco"
 
-The app will:
-- Send your prompt to CodeLlama
-- Extract the code from the first ``` block in the response
-- Save it as a random-numbered .py file
-- Display the full response and filename
-- Execute the code
+Output: The time in San Francisco, as determined by a newly created and executed Python script
+
 
 ## Safety Note
 

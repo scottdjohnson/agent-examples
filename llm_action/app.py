@@ -26,11 +26,9 @@ def main():
     llm_response = response['message']['content']
 
     # Find the first set of three backticks and extract content
-    backtick_pattern = r'```(.*?)```'
-    match = re.search(backtick_pattern, llm_response, re.DOTALL)
-
-    if match:
-        code_content = match.group(1).strip()
+    if '```' in llm_response:
+        parts = llm_response.split('```')
+        code_content = parts[1].strip() if len(parts) > 1 else ""
 
         # Generate a very long random number for filename
         random_number = random.randint(10**15, 10**20 - 1)  # 16-20 digit number
