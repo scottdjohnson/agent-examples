@@ -88,12 +88,15 @@ def time(timezone):
 
 def execute_tool(tool_name, parameters):
     """Execute a tool with given parameters."""
-    if tool_name == "geocode":
-        return geocode(parameters)
-    elif tool_name == "weather":
-        return weather(parameters)
-    elif tool_name == "time":
-        return time(parameters)
+    tools = {
+        "geocode": geocode,
+        "weather": weather,
+        "time": time
+    }
+    
+    tool = tools.get(tool_name)
+    if tool:
+        return tool(parameters)
     else:
         return {"error": f"Unknown tool: {tool_name}"}
 
