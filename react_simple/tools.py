@@ -4,7 +4,11 @@ from zoneinfo import ZoneInfo
 
 
 def geocode(city_name):
-    """Look up latitude/longitude for a city using Open-Meteo geocoding API."""
+    """Look up latitude/longitude for a city.
+    
+    Example API call:
+    curl "https://geocoding-api.open-meteo.com/v1/search?name=Seattle&count=1&language=en&format=json"
+    """
     print(f"[TOOL] Executing geocode with parameters: city_name='{city_name}'")
     try:
         url = "https://geocoding-api.open-meteo.com/v1/search"
@@ -33,6 +37,10 @@ def weather(coordinates):
     
     Args:
         coordinates: String in format "latitude, longitude"
+    
+    Example API call:
+    curl -L -H "User-Agent: ReActAgent/1.0" "https://api.weather.gov/points/47.6062,-122.3321"
+        Given properties->forecast, curl that URL for the forecast data
     """
     print(f"[TOOL] Executing weather with parameters: coordinates='{coordinates}'")
     try:
@@ -72,7 +80,11 @@ def weather(coordinates):
 
 
 def time(timezone):
-    """Get current time for a timezone."""
+    """Get current time for a timezone.
+    
+    Note: This is computed locally using Python's datetime and zoneinfo,
+    not via an external API call.
+    """
     print(f"[TOOL] Executing time with parameters: timezone='{timezone}'")
     try:
         tz = ZoneInfo(timezone)
