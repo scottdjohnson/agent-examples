@@ -28,10 +28,22 @@ def geocode(city_name):
         return {"error": str(e)}
 
 
-def get_weather(latitude, longitude):
-    """Get weather information from weather.gov API."""
-    print(f"[TOOL] Executing get_weather with parameters: latitude={latitude}, longitude={longitude}")
+def weather(coordinates):
+    """Get weather information from weather.gov API.
+    
+    Args:
+        coordinates: String in format "latitude, longitude"
+    """
+    print(f"[TOOL] Executing weather with parameters: coordinates='{coordinates}'")
     try:
+        # Parse the coordinates string
+        parts = coordinates.split(',')
+        try:
+            latitude = float(parts[0].strip())
+            longitude = float(parts[1].strip())
+        except ValueError:
+            return {"error": "Invalid latitude/longitude values"}
+        
         url = f"https://api.weather.gov/points/{latitude},{longitude}"
         headers = {"User-Agent": "ReActAgent/1.0"}
         response = requests.get(url, headers=headers, timeout=10)
@@ -59,9 +71,9 @@ def get_weather(latitude, longitude):
         return {"error": str(e)}
 
 
-def get_time(timezone):
+def time(timezone):
     """Get current time for a timezone."""
-    print(f"[TOOL] Executing get_time with parameters: timezone='{timezone}'")
+    print(f"[TOOL] Executing time with parameters: timezone='{timezone}'")
     try:
         tz = ZoneInfo(timezone)
         current_time = datetime.now(tz)
@@ -79,18 +91,9 @@ def execute_tool(tool_name, parameters):
     if tool_name == "geocode":
         return geocode(parameters)
     elif tool_name == "weather":
-        # Parameters should be "latitude,longitude"
-        parts = parameters.split(',')
-        if len(parts) == 2:
-            try:
-                lat = float(parts[0].strip())
-                lon = float(parts[1].strip())
-                return get_weather(lat, lon)
-            except ValueError:
-                return {"error": "Invalid latitude/longitude format"}
-        return {"error": "Weather requires latitude,longitude"}
+        return weather(parameters)
     elif tool_name == "time":
-        return get_time(parameters)
+        return time(parameters)
     else:
         return {"error": f"Unknown tool: {tool_name}"}
 
