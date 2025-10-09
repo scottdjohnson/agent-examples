@@ -33,21 +33,6 @@ Action: Final(Answer to the original question)
 Note that the above pattern may occur only once or multiple times. 
 Do not create more than one thought at a time.
 
-Example:
-User Question: What is the weather in Paris?
-Thought: I need to find the coordinates of Paris first.
-Action: geocode(Paris)
-
-Observation: {{'latitude': 48.85341, 'longitude': 2.3488, 'name': 'Paris', 'country': 'France', 'timezone': 'Europe/Paris'}}
-
-Thought: Now I have the coordinates, I can get the weather information.
-Action: weather(48.85341,2.3488)
-
-Observation: {{'period': 'Today', 'temperature': 65, 'temperatureUnit': 'F', 'shortForecast': 'Partly Cloudy'}}
-
-Thought: I now have all the information to answer the question.
-Action: Final(The weather in Paris today is partly cloudy with a temperature of 65°F.)
-
 Begin!
 
 User Question: {question}

@@ -5,13 +5,26 @@ from prompt import REACT_PROMPT
 
 
 def parse_action(text):
-    """Parse action from LLM response."""
-    # Look for Action: tool_name(parameters)
+    """Parse action from LLM response.
+    
+    Supports both formats:
+    - Action: tool_name(parameters)
+    - Action: tool_name[parameters]
+    """
+    # Try parentheses format first
     match = re.search(r'Action:\s*(\w+)\((.*?)\)', text, re.IGNORECASE)
     if match:
         tool_name = match.group(1)
         parameters = match.group(2).strip()
         return tool_name, parameters
+    
+    # Try square brackets format
+    match = re.search(r'Action:\s*(\w+)\[(.*?)\]', text, re.IGNORECASE)
+    if match:
+        tool_name = match.group(1)
+        parameters = match.group(2).strip()
+        return tool_name, parameters
+    
     return None, None
 
 
@@ -35,6 +48,8 @@ def run_react_agent(question, max_iterations=5):
         
         # Parse and execute Action: []
         tool_name, parameters = parse_action(llm_response)
+
+        print(f"Tool name: {tool_name}, Parameters: {parameters}")
         
         # Check if we have a Final action (end of loop)
         if tool_name == "Final":
