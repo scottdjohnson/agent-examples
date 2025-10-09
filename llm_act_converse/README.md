@@ -1,6 +1,6 @@
 # LLM Action Conversational App
 
-A Python application that engages in a conversational loop with the user. For each prompt, it uses CodeLlama to generate Python code, saves it to a file, and executes it. The conversation maintains full history, allowing the LLM to reference previous exchanges.
+A Python application that engages in a conversational loop with the user. For each prompt, it uses an LLM to generate Python code, saves it to a file, and executes it. The conversation maintains full history, allowing the LLM to reference previous exchanges.
 
 ## Prerequisites
 
@@ -26,22 +26,11 @@ Example conversation:
 You: Give me the current time in San Francisco
 [Code is generated and executed]
 
-You: Now show me the time in Tokyo
+You: Now show me Tokyo
 [Code is generated and executed, with awareness of previous context]
 
 You: exit
 ```
-
-## Features
-
-- **Conversational Memory**: Each subsequent question and response is appended to the conversation history, allowing the LLM to maintain context across multiple exchanges.
-  - `user`: User prompts
-  - `code_generation`: LLM's code generation response (raw output with code blocks)
-  - `assistant`: Final execution results shown to the user (captured output or errors)
-- **Loop-based Interaction**: Continuously prompts for new questions until the user types 'exit' or 'quit'.
-- **Code Generation & Execution**: Extracts Python code from LLM responses, saves it to a file, and executes it.
-- **Output Capture**: Captures and stores the execution output separately from the code generation response.
-- **Full Response Display**: Shows the complete LLM response before execution.
 
 ## Exit Commands
 
