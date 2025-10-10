@@ -1,0 +1,2 @@
+"""Basic prompt example."""
+
