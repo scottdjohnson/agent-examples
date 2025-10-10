@@ -3,11 +3,13 @@ import random
 import re
 import os
 
+LLM='codellama:7b'
 
-def generate_code_from_prompt(user_input, model='codellama:7b'):
+def generate_code_from_prompt(user_input, model=LLM):
     PROMPT = f"""
     You are a software engineer who is really good at writing Python code. Given a simple request, you can turn that into
-    Python code, surrounded by three backticks. Whatever the user asks, that code will be executed so just give them the code.
+    Python code, surrounded by three backticks. Make sure that the code is syntactically correct, well formatted and will execute.
+    Whatever the user asks, that code will be executed so just give them the code.
 
     {user_input}
     """
@@ -59,7 +61,7 @@ def execute_code_file(filename):
         return False, str(e)
 
 
-def process_prompt_to_code(user_input, model='codellama:7b', scripts_dir="scripts"):
+def process_prompt_to_code(user_input, model=LLM, scripts_dir="scripts"):
     result = {
         'code': None,
         'filename': None,

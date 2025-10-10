@@ -4,6 +4,7 @@ import os
 import sys
 from io import StringIO
 
+LLM='codellama:7b'
 
 def save_and_execute_code(code_content, scripts_dir="scripts"):
     # Save code to file
@@ -43,7 +44,7 @@ def save_and_execute_code(code_content, scripts_dir="scripts"):
     }
 
 
-def process_conversation_turn(user_input, messages, model='codellama:7b', scripts_dir="scripts"):
+def process_conversation_turn(user_input, messages, model=LLM, scripts_dir="scripts"):
     system_prompt = """
     You are a software engineer who is really good at writing Python code and nothing else. Given a simple request, you can turn that into
     Python code, surrounded by three backticks. Whatever the user asks, that code will be executed so just give them the code.
