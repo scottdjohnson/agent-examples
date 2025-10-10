@@ -13,8 +13,19 @@ This agent demonstrates the ReAct pattern where an LLM reasons about what action
 The agent has access to three tools:
 
 1. **geocode(city_name)**: Look up latitude/longitude coordinates for a city using Open-Meteo Geocoding API
+   ```bash
+   python -c "from tools import geocode; print(geocode('Seattle'))"
+   ```
+
 2. **weather(latitude,longitude)**: Get current weather information using weather.gov API
+   ```bash
+   python -c "from tools import weather; print(weather('47.6062,-122.3321'))"
+   ```
+
 3. **time(timezone)**: Get the current time for a specific timezone
+   ```bash
+   python -c "from tools import time; print(time('America/New_York'))"
+   ```
 
 
 ## Setup
