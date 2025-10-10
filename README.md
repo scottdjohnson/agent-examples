@@ -53,3 +53,23 @@ For further questions see: https://ollama.com
 ## Getting Started
 
 Each example folder contains its own README with setup instructions and usage details.
+
+## Running Tests
+
+Run all tests:
+```bash
+ollama pull codellama:7b
+ollama pull codellama:7b
+pytest -v
+```
+
+Run a specific test:
+```bash
+pytest test_prompt_example.py -v
+```
+
+Each test:
+1. Calls the testable function with sample input
+2. Defines expected criteria for valid output
+3. Uses `llm_judge()` to evaluate if result meets criteria
+4. LLM returns PASS/FAIL with explanation
