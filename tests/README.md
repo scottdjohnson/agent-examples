@@ -5,7 +5,9 @@ Tests for agent example modules using LLM-as-a-Judge evaluation.
 ## Test Files
 
 - **`test_prompt_example.py`**: Tests the basic prompt example
+- **`test_llm_action.py`**: Tests the code generation and execution module
 - **`test_utils.py`**: Common utilities including `llm_judge()` function
+- **`conftest.py`**: Pytest configuration for path setup
 
 ## Setup
 
