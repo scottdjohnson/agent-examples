@@ -1,76 +1,49 @@
 import ollama
 import random
-import re
 import os
 import sys
 from io import StringIO
 
-def remove_language_identifier(code_content):
-    code_lines = code_content.split('\n')
-    if code_lines and code_lines[0].strip().lower() in ['python', 'py']:
-        return '\n'.join(code_lines[1:])
-    return code_content
 
-def extract_code_from_response(llm_response):
-    if '```' not in llm_response:
-        return None
-    
-    parts = llm_response.split('```')
-    code_content = parts[1].strip() if len(parts) > 1 else ""
-    
-    # Remove language identifier if present (e.g., "python" at the start)
-    code_content = remove_language_identifier(code_content)
-    
-    return code_content
-
-def save_code_to_file(code_content):
-    # Generate a very long random number for filename
-    random_number = random.randint(10**15, 10**20 - 1)  # 16-20 digit number
-    
-    # Create scripts directory if it doesn't exist
-    scripts_dir = "scripts"
+def save_and_execute_code(code_content, scripts_dir="scripts"):
+    # Save code to file
+    random_number = random.randint(10**15, 10**20 - 1)
     os.makedirs(scripts_dir, exist_ok=True)
-    
-    # Create filename with scripts directory
     filename = os.path.join(scripts_dir, f"{random_number}.py")
-    
-    # Write the code content to the new file
     with open(filename, 'w') as f:
         f.write(code_content)
     
-    return filename
-
-def execute_code_file(filename):
-    # Capture stdout during execution
+    # Execute code and capture output
     old_stdout = sys.stdout
     sys.stdout = captured_output = StringIO()
     
-    # Execute the file
-    execution_error = None
+    output = None
+    error = None
     try:
         exec(open(filename).read())
+        output = captured_output.getvalue()
     except Exception as e:
-        execution_error = str(e)
+        error = str(e)
     finally:
-        # Restore stdout
         sys.stdout = old_stdout
     
-    # Get the captured output
-    output = captured_output.getvalue()
+    # Determine execution result message
+    if output:
+        execution_result = f"Code Output:\n{output}"
+    elif error:
+        execution_result = f"Error executing the file: {error}"
+    else:
+        execution_result = "Code executed successfully (no output)"
     
-    return output, execution_error
+    return {
+        'filename': filename,
+        'output': output,
+        'error': error,
+        'execution_result': execution_result
+    }
 
-def print_code_generation_response(llm_response):
-    # Print the LLM response indented for clarity
-    print("\n  [Code Generation Response:]")
-    for line in llm_response.split('\n'):
-        print(f"  {line}")
 
-def main():
-    # Initialize conversation history
-    messages = []
-    
-    # System prompt (only set once at the beginning)
+def process_conversation_turn(user_input, messages, model='codellama:7b', scripts_dir="scripts"):
     system_prompt = """
     You are a software engineer who is really good at writing Python code and nothing else. Given a simple request, you can turn that into
     Python code, surrounded by three backticks. Whatever the user asks, that code will be executed so just give them the code.
@@ -79,83 +52,97 @@ def main():
     Failing to generate code is failure at the task.
     """
     
+    # Add user message to conversation history
+    messages.append({'role': 'user', 'content': user_input})
+    
+    # Prepend system prompt to the first message for context
+    if len(messages) == 1:
+        messages[0]['content'] = system_prompt + "\n\n" + user_input
+    
+    # Send to Ollama
+    response = ollama.chat(
+        model=model,
+        messages=messages
+    )
+    
+    llm_response = response['message']['content']
+    messages.append({'role': 'code_generation', 'content': llm_response})
+    
+    # Extract code from backticks
+    code_content = None
+    if '```' in llm_response:
+        parts = llm_response.split('```')
+        code_content = parts[1].strip() if len(parts) > 1 else ""
+        # Remove language identifier if present
+        lines = code_content.split('\n')
+        if lines and lines[0].strip().lower() in ['python', 'py']:
+            code_content = '\n'.join(lines[1:])
+    
+    result = {
+        'code': code_content,
+        'filename': None,
+        'output': None,
+        'error': None,
+        'llm_response': llm_response
+    }
+    
+    if code_content:
+        exec_result = save_and_execute_code(code_content, scripts_dir)
+        result['filename'] = exec_result['filename']
+        result['output'] = exec_result['output']
+        result['error'] = exec_result['error']
+        execution_result = exec_result['execution_result']
+    else:
+        execution_result = "No code block found in the response."
+        result['error'] = execution_result
+    
+    messages.append({'role': 'assistant', 'content': execution_result})
+    
+    return result
+
+
+def main():
+    messages = []
+    
     print("Welcome to the conversational LLM action app!")
     print("Enter your prompts and I'll generate and execute code for you.")
     print("Type 'exit' or 'quit' to end the conversation.\n")
     
     while True:
-        # Get user input
         user_input = input("You: ").strip()
         
-        # Check for exit commands
         if user_input.lower() in ['exit', 'quit']:
             print("Goodbye!")
             break
         
-        # Skip empty inputs
         if not user_input:
             continue
         
-        # Add user message to conversation history
-        messages.append({'role': 'user', 'content': user_input})
+        # Process the conversation turn
+        result = process_conversation_turn(user_input, messages)
         
-        # Prepend system prompt to the first message for context
-        if len(messages) == 1:
-            messages[0]['content'] = system_prompt + "\n\n" + user_input
-        
-        # Send to Ollama (using codellama:7b model)
-        response = ollama.chat(
-            model='codellama:7b',
-            messages=messages
-        )
-        
-        llm_response = response['message']['content']
-        
-        # Store the LLM's code generation response separately
-        messages.append({'role': 'code_generation', 'content': llm_response})
-        
-        # Variable to store the final result that will be shown to the user
-        execution_result = ""
-        
-        # Extract code from the LLM response
-        code_content = extract_code_from_response(llm_response)
-        
-        if code_content is not None:
-            # Save the code to a file
-            filename = save_code_to_file(code_content)
+        # Display the result
+        if result['code']:
+            print(f"\n  [Code Generation Response:]")
+            for line in result['llm_response'].split('\n'):
+                print(f"  {line}")
             
-            # Print the entire LLM response (indented for clarity)
-            print_code_generation_response(llm_response)
-            
-            # Print the filename (indented)
-            print(f"\n  [Created file: {filename}]")
-            
-            # Say we're executing the file (indented)
+            print(f"\n  [Created file: {result['filename']}]")
             print("  [Executing that file...]\n")
             
-            # Execute the file and capture output
-            output, execution_error = execute_code_file(filename)
-            
-            # Print the output to the user (NOT indented - this is the final result)
             print("Result:")
-            if output:
-                print(output)
-                execution_result = f"Code Output:\n{output}"
-            elif execution_error:
-                print(f"Error executing the file: {execution_error}")
-                execution_result = f"Error executing the file: {execution_error}"
-
+            if result['output']:
+                print(result['output'])
+            elif result['error']:
+                print(f"Error: {result['error']}")
         else:
-            # If no backticks found, just print the response (indented)
-            print_code_generation_response(llm_response)
-            print("\n  [No code block found in the response.]")
-            execution_result = "No code block found in the response."
-        
-        # Add the final result to conversation history as 'assistant'
-        messages.append({'role': 'assistant', 'content': execution_result})
+            print(f"\n  [Response:]")
+            for line in result['llm_response'].split('\n'):
+                print(f"  {line}")
+            print(f"\n  [{result['error']}]")
         
         print("\n" + "-" * 80 + "\n")
 
+
 if __name__ == "__main__":
     main()
-
