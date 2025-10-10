@@ -3,36 +3,39 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 
-def geocode(city_name):
-    """Look up latitude/longitude for a city.
-    
-    Example API call:
-    curl "https://geocoding-api.open-meteo.com/v1/search?name=Seattle&count=1&language=en&format=json"
-    """
-    print(f"[TOOL] Executing geocode with parameters: city_name='{city_name}'")
+def make_request(url, headers=None, timeout=10):
     try:
-        url = "https://geocoding-api.open-meteo.com/v1/search"
-        params = {"name": city_name, "count": 1, "language": "en", "format": "json"}
-        response = requests.get(url, params=params, timeout=10)
+        response = requests.get(url, headers=headers, timeout=timeout)
         response.raise_for_status()
-        data = response.json()
-        
-        if "results" in data and len(data["results"]) > 0:
-            result = data["results"][0]
-            return {
-                "latitude": result["latitude"],
-                "longitude": result["longitude"],
-                "name": result["name"],
-                "country": result.get("country", ""),
-                "timezone": result.get("timezone", "")
-            }
-        else:
-            return {"error": f"City '{city_name}' not found"}
-    except Exception as e:
-        return {"error": str(e)}
+        return True, response.json()
+    except requests.exceptions.RequestException as e:
+        return False, str(e)
 
 
-def weather(coordinates):
+def geocode(city_name: str):
+    """Look up latitude/longitude for a city."""
+    print(f"[TOOL] Executing geocode with parameters: city_name='{city_name}'")
+    
+    url = f"https://geocoding-api.open-meteo.com/v1/search?name={city_name}&count=1&language=en&format=json"
+    success, data = make_request(url)
+    
+    if not success:
+        return {"error": data}
+    
+    if "results" in data and len(data["results"]) > 0:
+        result = data["results"][0]
+        return {
+            "latitude": result["latitude"],
+            "longitude": result["longitude"],
+            "name": result["name"],
+            "country": result.get("country", ""),
+            "timezone": result.get("timezone", "")
+        }
+    else:
+        return {"error": f"City '{city_name}' not found"}
+
+
+def weather(coordinates: str):
     """Get weather information from weather.gov API.
     
     Args:
@@ -43,40 +46,41 @@ def weather(coordinates):
         Given properties->forecast, curl that URL for the forecast data
     """
     print(f"[TOOL] Executing weather with parameters: coordinates='{coordinates}'")
+    
+    # Parse the coordinates string
+    parts = coordinates.split(',')
     try:
-        # Parse the coordinates string
-        parts = coordinates.split(',')
-        try:
-            latitude = float(parts[0].strip())
-            longitude = float(parts[1].strip())
-        except ValueError:
-            return {"error": "Invalid latitude/longitude values"}
-        
-        url = f"https://api.weather.gov/points/{latitude},{longitude}"
-        headers = {"User-Agent": "ReActAgent/1.0"}
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
-        data = response.json()
-        
-        # Get forecast URL
-        forecast_url = data["properties"]["forecast"]
-        forecast_response = requests.get(forecast_url, headers=headers, timeout=10)
-        forecast_response.raise_for_status()
-        forecast_data = forecast_response.json()
-        
-        # Get first period (current/upcoming)
-        if forecast_data["properties"]["periods"]:
-            period = forecast_data["properties"]["periods"][0]
-            return {
-                "period": period["name"],
-                "temperature": period["temperature"],
-                "temperatureUnit": period["temperatureUnit"],
-                "shortForecast": period["shortForecast"],
-                "detailedForecast": period["detailedForecast"]
-            }
-        return {"error": "No forecast data available"}
-    except Exception as e:
-        return {"error": str(e)}
+        latitude = float(parts[0].strip())
+        longitude = float(parts[1].strip())
+    except (ValueError, IndexError):
+        return {"error": "Invalid latitude/longitude values"}
+    
+    # Step 1: Get the forecast URL from the points endpoint
+    url = f"https://api.weather.gov/points/{latitude},{longitude}"
+    success, data = make_request(url)
+    
+    if not success:
+        return {"error": data}
+    
+    # Step 2: Get the forecast from the forecast URL
+    forecast_url = data["properties"]["forecast"]
+    success, forecast_data = make_request(forecast_url)
+    
+    if not success:
+        return {"error": forecast_data}
+    
+    # Get first period (current/upcoming)
+    if forecast_data["properties"]["periods"]:
+        period = forecast_data["properties"]["periods"][0]
+        return {
+            "period": period["name"],
+            "temperature": period["temperature"],
+            "temperatureUnit": period["temperatureUnit"],
+            "shortForecast": period["shortForecast"],
+            "detailedForecast": period["detailedForecast"]
+        }
+    
+    return {"error": "No forecast data available"}
 
 
 def time(timezone):
