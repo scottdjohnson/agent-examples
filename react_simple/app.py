@@ -9,6 +9,7 @@ except ImportError:
     from tools import execute_tool
     from prompt import REACT_PROMPT
 
+LLM='qwen2.5:7b'
 
 def parse_action(text):
     """Parse action from LLM response:
@@ -32,7 +33,7 @@ def parse_action(text):
     return None, None
 
 
-def process_react_query(question, model='qwen2.5:7b', max_iterations=5):
+def process_react_query(question, model=LLM, max_iterations=5):
     conversation = REACT_PROMPT.format(question=question)
     iterations = []
     

@@ -44,9 +44,8 @@ Type any of the following to end the conversation:
 
 ## Changing Models
 
-In `app.py`, you can change the model by modifying the `model` parameter in the `ollama.chat()` call. For example:
+In `app.py`, you can change the model by modifying the `LLM` parameter in the `ollama.chat()` call. For example:
 - `'codellama:7b'` (current)
-- `'codellama:13b'`
 - `'llama2'`
 - Any other model you have installed
 

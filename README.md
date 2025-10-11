@@ -43,6 +43,7 @@ ollama serve
 
 # In a separate terminal, pull the required models
 ollama pull codellama:7b
+ollama pull codellama:7b
 ```
 
 For smaller models, try `llama3.2:1b` or see: https://ollama.com/search
@@ -54,12 +55,12 @@ For further questions see: https://ollama.com
 
 Each example folder contains its own README with setup instructions and usage details.
 
-## Running Tests
+### Running Tests
 
 Run all tests:
 ```bash
 ollama pull codellama:7b
-ollama pull codellama:7b
+ollama pull qwen2.5:7b
 pytest -v
 ```
 

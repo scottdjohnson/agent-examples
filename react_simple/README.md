@@ -35,9 +35,9 @@ The agent has access to three tools:
 pip install -r requirements.txt
 ```
 
-2. Make sure Ollama is running with the llama3.2 model:
+2. Make sure Ollama is running with the qwen2.5:7b:
 ```bash
-ollama pull llama3.2:latest
+ollama pull qwen2.5:7b
 ```
 
 ## Usage

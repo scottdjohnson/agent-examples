@@ -27,8 +27,8 @@ Enter your prompt when prompted, and the app will send it to Ollama and display 
 
 ## Changing Models
 
-In `app.py`, you can change the model by modifying the `model` parameter in the `ollama.chat()` call. For example:
-- `'llama3'` (default)
+In `app.py`, you can change the model by modifying the `LLM` parameter. For example:
+- `'llama3'`
 - `'codellama'`
 - `'mistral'`
 - Any other model you have installed

@@ -1,14 +1,14 @@
 """Common utilities for testing agent examples."""
 import ollama
 
-
-def llm_judge(result, expected_criteria, model='qwen2.5:7b'):
+LLM='qwen2.5:7b'
+def llm_judge(result, expected_criteria, model=LLM):
     """Use LLM as a judge to validate if results meet criteria.
     
     Args:
         result: The actual result from the function
         expected_criteria: Description of what the result should contain
-        model: The LLM model to use for judging (default: qwen2.5:7b)
+        model: The LLM model to use for judging
         
     Returns:
         bool: True if LLM judges the result as valid

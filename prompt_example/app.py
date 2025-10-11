@@ -1,7 +1,8 @@
 import ollama
 
+LLM='codellama:7b'
 
-def get_llm_response(user_input, model='codellama:7b'):
+def get_llm_response(user_input, model=LLM):
     """Send a prompt to the LLM and return the response.
     
     Args:
