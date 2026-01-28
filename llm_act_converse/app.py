@@ -30,7 +30,7 @@ def save_and_execute_code(code_content, scripts_dir="scripts"):
     
     # Determine execution result message
     if output:
-        execution_result = f"Code Output:\n{output}"
+        execution_result = f"{output}"
     elif error:
         execution_result = f"Error executing the file: {error}"
     else:
@@ -52,14 +52,14 @@ def process_conversation_turn(user_input, messages, model=LLM, scripts_dir="scri
     Do not assume that you can just give them the answer. You will probably be wrong unless the answer is in Python. 
     Failing to generate code is failure at the task.
     """
-    
+
+    # Prepend system prompt to the first message for context
+    if len(messages) == 0:
+        messages.append({'role': 'system', 'content': system_prompt})
+
     # Add user message to conversation history
     messages.append({'role': 'user', 'content': user_input})
-    
-    # Prepend system prompt to the first message for context
-    if len(messages) == 1:
-        messages[0]['content'] = system_prompt + "\n\n" + user_input
-    
+
     # Send to Ollama
     response = ollama.chat(
         model=model,
@@ -68,7 +68,7 @@ def process_conversation_turn(user_input, messages, model=LLM, scripts_dir="scri
     
     llm_response = response['message']['content']
     messages.append({'role': 'code_generation', 'content': llm_response})
-    
+
     # Extract code from backticks
     code_content = None
     if '```' in llm_response:
