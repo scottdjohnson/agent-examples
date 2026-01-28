@@ -14,7 +14,7 @@ def make_request(url, headers=None, timeout=10):
 
 def geocode(city_name: str):
     """Look up latitude/longitude for a city."""
-    print(f"[TOOL] Executing geocode with parameters: city_name='{city_name}'")
+    #print(f"[TOOL] Executing geocode with parameters: city_name='{city_name}'")
     
     url = f"https://geocoding-api.open-meteo.com/v1/search?name={city_name}&count=1&language=en&format=json"
     success, data = make_request(url)
@@ -45,7 +45,7 @@ def weather(coordinates: str):
     curl -L -H "User-Agent: ReActAgent/1.0" "https://api.weather.gov/points/47.6062,-122.3321"
         Given properties->forecast, curl that URL for the forecast data
     """
-    print(f"[TOOL] Executing weather with parameters: coordinates='{coordinates}'")
+    #print(f"[TOOL] Executing weather with parameters: coordinates='{coordinates}'")
     
     # Parse the coordinates string
     parts = coordinates.split(',')
@@ -89,7 +89,7 @@ def time(timezone):
     Note: This is computed locally using Python's datetime and zoneinfo,
     not via an external API call.
     """
-    print(f"[TOOL] Executing time with parameters: timezone='{timezone}'")
+    #print(f"[TOOL] Executing time with parameters: timezone='{timezone}'")
     try:
         tz = ZoneInfo(timezone)
         current_time = datetime.now(tz)

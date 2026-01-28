@@ -26,7 +26,7 @@ Example conversation:
 You: Give me the current time in San Francisco
 [Code is generated and executed]
 
-You: Now show me Tokyo
+You: Now give me Tokyo
 [Code is generated and executed, with awareness of previous context]
 
 You: exit

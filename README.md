@@ -43,7 +43,6 @@ ollama serve
 
 # In a separate terminal, pull the required models
 ollama pull codellama:7b
-ollama pull codellama:7b
 ```
 
 For smaller models, try `llama3.2:1b` or see: https://ollama.com/search

@@ -91,7 +91,7 @@ def run_react_agent(question, max_iterations=5):
         print(f"Tool name: {iter_data['tool_name']}, Parameters: {iter_data['parameters']}")
         
         if iter_data['tool_result']:
-            print(f"Result: {iter_data['tool_result']}\n")
+            print(f"Observation: {iter_data['tool_result']}\n")
     
     if result['completed']:
         print(f"\n{'='*60}\nFINAL ANSWER: {result['answer']}\n{'='*60}\n")

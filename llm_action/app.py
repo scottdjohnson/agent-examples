@@ -97,11 +97,11 @@ def main():
     result = process_prompt_to_code(user_input)
     
     if result['code']:
-        print(f"\nCreated file: {result['filename']}")
-        print("Executing that file...")
-        
+        print("*************************************")
+        print(f"Created file: {result['filename']}")
         if not result['executed']:
             print(f"Error executing the file: {result['error']}")
+        print("*************************************")
     else:
         print(f"\n{result['error']}")
 
