@@ -23,7 +23,14 @@ Expected criteria:
 
 Does the result meet the criteria? Respond with only "PASS" or "FAIL" followed by a brief explanation.
 """
-    
+    print("\n\n*************************************")
+    print (f"Testing:\n\n{result}")
+    print("*************************************")
+
+    print("*************************************")
+    print (f"Criteria:\n\n{expected_criteria}")
+    print("*************************************")
+
     response = ollama.chat(
         model=model,
         messages=[{'role': 'user', 'content': prompt}]

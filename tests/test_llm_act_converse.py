@@ -35,7 +35,7 @@ def test_process_conversation_turn(tmp_path):
         
         assert result_1['filename'] is not None, "First turn: File should be created"
         assert os.path.exists(result_1['filename']), f"First turn: File should exist"
-        assert len(messages) == 3, "First turn: Should have 3 messages in history"
+        assert len(messages) == 4, "First turn: Should have 4 messages in history"
         
         criteria_1 = """
         The result should indicate successful code generation:
@@ -71,15 +71,16 @@ def test_process_conversation_turn(tmp_path):
         assert result_2['filename'] is not None, "Second turn: File should be created"
         assert result_2['filename'] != result_1['filename'], "Second turn: Should create a new file"
         assert os.path.exists(result_2['filename']), f"Second turn: File should exist"
-        assert len(messages) == 6, "Second turn: Should have 6 messages in history (3 per turn)"
+        assert len(messages) == 7, "Second turn: Should have 7 messages in history (4 + 3)"
         
         # Validate conversation history structure
-        assert messages[0]['role'] == 'user', "Message 0 should be user"
-        assert messages[1]['role'] == 'code_generation', "Message 1 should be code_generation"
-        assert messages[2]['role'] == 'assistant', "Message 2 should be assistant"
-        assert messages[3]['role'] == 'user', "Message 3 should be user"
-        assert messages[4]['role'] == 'code_generation', "Message 4 should be code_generation"
-        assert messages[5]['role'] == 'assistant', "Message 5 should be assistant"
+        assert messages[0]['role'] == 'system', "Message should be system"
+        assert messages[1]['role'] == 'user', "Message should be user"
+        assert messages[2]['role'] == 'code_generation', "Message should be code_generation"
+        assert messages[3]['role'] == 'assistant', "Message should be assistant"
+        assert messages[4]['role'] == 'user', "Message should be user"
+        assert messages[5]['role'] == 'code_generation', "Message 4 should be code_generation"
+        assert messages[6]['role'] == 'assistant', "Message should be assistant"
         
         criteria_2 = """
         The result should show the conversation context was maintained:
